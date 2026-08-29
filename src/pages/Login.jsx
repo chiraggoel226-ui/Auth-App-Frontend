@@ -38,13 +38,26 @@ function Login() {
         setError("");
         setLoading(true);
 
+
         try {
+
+            // Clear old authentication data
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("user");
+
+
+            // ==========================================
+            // LOGIN REQUEST
+            // ==========================================
 
             const response = await api.post(
                 "/api/v1/auth/login",
                 {
-                    email,
-                    password
+                    email: email.trim(),
+                    password: password
                 }
             );
 
@@ -61,20 +74,21 @@ function Login() {
 
 
             // ==========================================
-            // CHECK JWT
+            // GET JWT TOKEN
             // ==========================================
 
             const token = response.data?.token;
 
 
+            // No token received
             if (!token) {
 
                 console.error(
-                    "No JWT token received from backend."
+                    "JWT token not received from backend."
                 );
 
                 setError(
-                    "Login failed. Server did not return an authentication token."
+                    "Login failed. Authentication token was not received."
                 );
 
                 return;
@@ -82,21 +96,7 @@ function Login() {
 
 
             // ==========================================
-            // CLEAR OLD AUTH DATA
-            // ==========================================
-
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-
-            sessionStorage.removeItem("token");
-            sessionStorage.removeItem("user");
-
-
-            // ==========================================
-            // SAVE TOKEN
-            // ==========================================
-            // IMPORTANT:
-            // AllUsers.jsx also reads from localStorage
+            // SAVE JWT IN LOCAL STORAGE
             // ==========================================
 
             localStorage.setItem(
@@ -106,7 +106,7 @@ function Login() {
 
 
             // ==========================================
-            // SAVE USER
+            // SAVE USER DATA
             // ==========================================
 
             localStorage.setItem(
@@ -115,13 +115,32 @@ function Login() {
             );
 
 
+            // ==========================================
+            // VERIFY TOKEN WAS SAVED
+            // ==========================================
+
+            const savedToken =
+                localStorage.getItem("token");
+
+
             console.log(
-                "JWT saved successfully."
+                "TOKEN SAVED:",
+                savedToken
             );
 
 
+            if (!savedToken) {
+
+                setError(
+                    "Unable to save login session."
+                );
+
+                return;
+            }
+
+
             // ==========================================
-            // DASHBOARD
+            // GO TO DASHBOARD
             // ==========================================
 
             navigate("/dashboard");
@@ -130,13 +149,13 @@ function Login() {
         } catch (err) {
 
             console.error(
-                "Login error:",
+                "LOGIN ERROR:",
                 err
             );
 
 
             // ==========================================
-            // BACKEND RESPONSE ERROR
+            // BACKEND ERROR
             // ==========================================
 
             if (err.response) {
@@ -147,23 +166,32 @@ function Login() {
                 );
 
                 console.error(
-                    "ERROR RESPONSE:",
+                    "SERVER ERROR:",
                     err.response.data
                 );
 
 
-                setError(
-                    err.response.data?.message ||
-                    "Invalid email or password."
-                );
+                // Unauthorized
+                if (err.response.status === 401) {
+
+                    setError(
+                        "Invalid email or password."
+                    );
+
+                } else {
+
+                    setError(
+                        err.response.data?.message ||
+                        "Invalid email or password."
+                    );
+                }
 
             } else {
 
                 setError(
-                    "Cannot connect to server. Make sure the backend is running."
+                    "Cannot connect to server. Please try again."
                 );
             }
-
 
         } finally {
 
@@ -178,6 +206,13 @@ function Login() {
 
     const handleGoogleLogin = () => {
 
+        // Clear old JWT before OAuth login
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        sessionStorage.clear();
+
+
         window.location.href =
             `${import.meta.env.VITE_API_URL}/oauth2/authorization/google`;
     };
@@ -189,6 +224,13 @@ function Login() {
 
     const handleGithubLogin = () => {
 
+        // Clear old JWT before OAuth login
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        sessionStorage.clear();
+
+
         window.location.href =
             `${import.meta.env.VITE_API_URL}/oauth2/authorization/github`;
     };
@@ -197,6 +239,10 @@ function Login() {
     return (
 
         <div className="login-page">
+
+            {/* ========================================== */}
+            {/* LEFT SIDE */}
+            {/* ========================================== */}
 
             <section className="login-left">
 
@@ -300,6 +346,10 @@ function Login() {
             </section>
 
 
+            {/* ========================================== */}
+            {/* RIGHT SIDE */}
+            {/* ========================================== */}
+
             <section className="login-right">
 
                 <div className="login-box">
@@ -320,6 +370,10 @@ function Login() {
                     </p>
 
 
+                    {/* ========================================== */}
+                    {/* ERROR */}
+                    {/* ========================================== */}
+
                     {error && (
 
                         <div className="message error-message">
@@ -328,6 +382,10 @@ function Login() {
 
                     )}
 
+
+                    {/* ========================================== */}
+                    {/* LOGIN FORM */}
+                    {/* ========================================== */}
 
                     <form onSubmit={handleSubmit}>
 
@@ -454,7 +512,9 @@ function Login() {
                     </form>
 
 
+                    {/* ========================================== */}
                     {/* DIVIDER */}
+                    {/* ========================================== */}
 
                     <div className="divider">
 
@@ -465,7 +525,9 @@ function Login() {
                     </div>
 
 
+                    {/* ========================================== */}
                     {/* GOOGLE */}
+                    {/* ========================================== */}
 
                     <button
                         type="button"
@@ -484,7 +546,9 @@ function Login() {
                     </button>
 
 
+                    {/* ========================================== */}
                     {/* GITHUB */}
+                    {/* ========================================== */}
 
                     <button
                         type="button"
@@ -503,7 +567,9 @@ function Login() {
                     </button>
 
 
+                    {/* ========================================== */}
                     {/* REGISTER */}
+                    {/* ========================================== */}
 
                     <p className="register-text">
 
