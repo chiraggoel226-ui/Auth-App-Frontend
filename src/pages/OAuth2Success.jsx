@@ -1,118 +1,80 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import axios from "axios";
 
-function OAuth2Success() {
+const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://auth-app-iomr.onrender.com";
 
-    const navigate = useNavigate();
-
-    const [searchParams] =
-        useSearchParams();
-
-    const [error, setError] =
-        useState("");
-
-
-    useEffect(() => {
-
-        const token =
-            searchParams.get("token");
+const api = axios.create({
+    baseURL: API_URL,
+    headers: {
+        "Content-Type": "application/json"
+    }
+});
 
 
-        if (!token) {
+// ==========================================
+// JWT AUTOMATICALLY ADD KARO
+// ==========================================
 
-            setError(
-                "OAuth login failed. Token not received."
-            );
+api.interceptors.request.use(
+    (config) => {
 
-            return;
+        // IMPORTANT:
+        // Token localStorage se lena hai
+        const token = localStorage.getItem("token");
+
+        console.log("API REQUEST:", config.method?.toUpperCase(), config.url);
+        console.log("JWT TOKEN:", token);
+
+        if (token) {
+
+            config.headers = config.headers || {};
+
+            config.headers.Authorization =
+                `Bearer ${token}`;
         }
 
+        return config;
+    },
 
-        console.log(
-            "OAuth JWT received:",
-            token
-        );
-
-
-        // ==========================================
-        // SAVE JWT
-        // ==========================================
-
-        sessionStorage.setItem(
-            "token",
-            token
-        );
-
-
-        // ==========================================
-        // GO TO DASHBOARD
-        // ==========================================
-
-        navigate(
-            "/dashboard",
-            {
-                replace: true
-            }
-        );
-
-    }, [navigate, searchParams]);
-
-
-    if (error) {
-
-        return (
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "100vh",
-                    flexDirection: "column"
-                }}
-            >
-
-                <h2>
-                    Login Failed
-                </h2>
-
-                <p>
-                    {error}
-                </p>
-
-                <button
-                    onClick={() =>
-                        navigate("/login")
-                    }
-                >
-                    Back to Login
-                </button>
-
-            </div>
-        );
+    (error) => {
+        return Promise.reject(error);
     }
+);
 
 
-    return (
-        <div
-            style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100vh",
-                flexDirection: "column"
-            }}
-        >
+// ==========================================
+// HANDLE 401
+// ==========================================
 
-            <h2>
-                Login Successful
-            </h2>
+api.interceptors.response.use(
 
-            <p>
-                Redirecting to dashboard...
-            </p>
+    (response) => {
+        return response;
+    },
 
-        </div>
-    );
-}
+    (error) => {
 
-export default OAuth2Success;
+        console.error(
+            "API ERROR:",
+            error.response?.status,
+            error.response?.data
+        );
+
+
+        if (error.response?.status === 401) {
+
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+
+            sessionStorage.clear();
+
+            window.location.href = "/login";
+        }
+
+        return Promise.reject(error);
+    }
+);
+
+
+export default api;

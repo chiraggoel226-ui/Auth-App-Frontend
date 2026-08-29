@@ -41,12 +41,12 @@ function Login() {
 
         try {
 
-            // Clear old authentication data
+            // ==========================================
+            // CLEAR OLD LOGIN DATA
+            // ==========================================
+
             localStorage.removeItem("token");
             localStorage.removeItem("user");
-
-            sessionStorage.removeItem("token");
-            sessionStorage.removeItem("user");
 
 
             // ==========================================
@@ -77,10 +77,10 @@ function Login() {
             // GET JWT TOKEN
             // ==========================================
 
-            const token = response.data?.token;
+            const token =
+                response.data?.token;
 
 
-            // No token received
             if (!token) {
 
                 console.error(
@@ -96,7 +96,7 @@ function Login() {
 
 
             // ==========================================
-            // SAVE JWT IN LOCAL STORAGE
+            // SAVE JWT
             // ==========================================
 
             localStorage.setItem(
@@ -106,7 +106,7 @@ function Login() {
 
 
             // ==========================================
-            // SAVE USER DATA
+            // SAVE USER
             // ==========================================
 
             localStorage.setItem(
@@ -116,7 +116,7 @@ function Login() {
 
 
             // ==========================================
-            // VERIFY TOKEN WAS SAVED
+            // VERIFY JWT
             // ==========================================
 
             const savedToken =
@@ -140,10 +140,15 @@ function Login() {
 
 
             // ==========================================
-            // GO TO DASHBOARD
+            // LOGIN SUCCESS
             // ==========================================
 
-            navigate("/dashboard");
+            navigate(
+                "/dashboard",
+                {
+                    replace: true
+                }
+            );
 
 
         } catch (err) {
@@ -171,8 +176,9 @@ function Login() {
                 );
 
 
-                // Unauthorized
-                if (err.response.status === 401) {
+                if (
+                    err.response.status === 401
+                ) {
 
                     setError(
                         "Invalid email or password."
@@ -206,11 +212,9 @@ function Login() {
 
     const handleGoogleLogin = () => {
 
-        // Clear old JWT before OAuth login
+        // Clear previous login
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-
-        sessionStorage.clear();
 
 
         window.location.href =
@@ -224,11 +228,9 @@ function Login() {
 
     const handleGithubLogin = () => {
 
-        // Clear old JWT before OAuth login
+        // Clear previous login
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-
-        sessionStorage.clear();
 
 
         window.location.href =
@@ -239,6 +241,7 @@ function Login() {
     return (
 
         <div className="login-page">
+
 
             {/* ========================================== */}
             {/* LEFT SIDE */}
@@ -339,8 +342,10 @@ function Login() {
 
 
                 <p className="copyright">
+
                     © 2026 AuthHub.
                     All rights reserved.
+
                 </p>
 
             </section>
@@ -354,6 +359,7 @@ function Login() {
 
                 <div className="login-box">
 
+
                     <div className="mobile-logo">
                         <ShieldCheck size={25} />
                     </div>
@@ -365,8 +371,10 @@ function Login() {
 
 
                     <p className="login-subtitle">
+
                         Welcome back! Please enter
                         your details.
+
                     </p>
 
 
@@ -377,7 +385,9 @@ function Login() {
                     {error && (
 
                         <div className="message error-message">
+
                             {error}
+
                         </div>
 
                     )}
@@ -388,6 +398,7 @@ function Login() {
                     {/* ========================================== */}
 
                     <form onSubmit={handleSubmit}>
+
 
                         {/* EMAIL */}
 
@@ -402,12 +413,15 @@ function Login() {
 
                                 <Mail size={19} />
 
+
                                 <input
                                     type="email"
                                     placeholder="you@example.com"
                                     value={email}
                                     onChange={(e) =>
-                                        setEmail(e.target.value)
+                                        setEmail(
+                                            e.target.value
+                                        )
                                     }
                                     required
                                 />
@@ -427,6 +441,7 @@ function Login() {
                                     Password
                                 </label>
 
+
                                 <a
                                     href="#"
                                     onClick={(e) =>
@@ -443,6 +458,7 @@ function Login() {
 
                                 <Lock size={19} />
 
+
                                 <input
                                     type={
                                         showPassword
@@ -452,7 +468,9 @@ function Login() {
                                     placeholder="Enter your password"
                                     value={password}
                                     onChange={(e) =>
-                                        setPassword(e.target.value)
+                                        setPassword(
+                                            e.target.value
+                                        )
                                     }
                                     required
                                 />
@@ -469,9 +487,13 @@ function Login() {
                                 >
 
                                     {showPassword ? (
+
                                         <EyeOff size={18} />
+
                                     ) : (
+
                                         <Eye size={18} />
+
                                     )}
 
                                 </button>
@@ -498,11 +520,13 @@ function Login() {
                             ) : (
 
                                 <>
+
                                     <span>
                                         Sign in
                                     </span>
 
                                     <ArrowRight size={19} />
+
                                 </>
 
                             )}
