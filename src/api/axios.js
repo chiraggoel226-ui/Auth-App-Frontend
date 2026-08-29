@@ -11,20 +11,12 @@ const api = axios.create({
     },
 });
 
-
-// ==========================================
-// JWT FROM LOCAL STORAGE
-// ==========================================
-
 api.interceptors.request.use(
     (config) => {
 
         const token = localStorage.getItem("token");
 
         if (token) {
-
-            config.headers = config.headers || {};
-
             config.headers.Authorization =
                 `Bearer ${token}`;
         }
@@ -32,29 +24,15 @@ api.interceptors.request.use(
         return config;
     },
 
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
 
-
-// ==========================================
-// HANDLE 401
-// ==========================================
-
 api.interceptors.response.use(
-
-    (response) => {
-        return response;
-    },
+    (response) => response,
 
     (error) => {
 
         if (error.response?.status === 401) {
-
-            console.error(
-                "401 Unauthorized - JWT invalid/missing"
-            );
 
             localStorage.removeItem("token");
             localStorage.removeItem("user");
@@ -65,6 +43,5 @@ api.interceptors.response.use(
         return Promise.reject(error);
     }
 );
-
 
 export default api;
