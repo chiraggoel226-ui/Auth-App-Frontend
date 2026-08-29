@@ -7,17 +7,11 @@ const Dashboard = () => {
 
 
     // ==========================================
-    // GET JWT TOKEN
-    // ==========================================
-
-    const token = localStorage.getItem("token");
-
-
-    // ==========================================
     // GET LOGGED-IN USER
     // ==========================================
 
-    const storedUser = localStorage.getItem("user");
+    const storedUser =
+        localStorage.getItem("user");
 
     let user = null;
 
@@ -54,10 +48,14 @@ const Dashboard = () => {
 
     const handleLogout = () => {
 
+        // Remove JWT
         localStorage.removeItem("token");
+
+        // Remove user
         localStorage.removeItem("user");
 
-        sessionStorage.clear();
+        // IMPORTANT:
+        // No sessionStorage here
 
         navigate(
             "/login",
@@ -69,13 +67,14 @@ const Dashboard = () => {
 
 
     // ==========================================
-    // CHECK LOGIN
+    // PROTECTED NAVIGATION
     // ==========================================
 
     const handleProtectedNavigation = (path) => {
 
         const currentToken =
             localStorage.getItem("token");
+
 
         if (!currentToken) {
 
@@ -88,6 +87,7 @@ const Dashboard = () => {
 
             return;
         }
+
 
         navigate(path);
     };
