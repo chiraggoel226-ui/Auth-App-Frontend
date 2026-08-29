@@ -102,18 +102,26 @@ function Login() {
     };
 
 
+    // ==========================================
+    // GOOGLE LOGIN
+    // ==========================================
+
     const handleGoogleLogin = () => {
 
         window.location.href =
-            "http://localhost:8080/oauth2/authorization/google";
+            `${import.meta.env.VITE_API_URL}/oauth2/authorization/google`;
 
     };
 
 
+    // ==========================================
+    // GITHUB LOGIN
+    // ==========================================
+
     const handleGithubLogin = () => {
 
         window.location.href =
-            "http://localhost:8080/oauth2/authorization/github";
+            `${import.meta.env.VITE_API_URL}/oauth2/authorization/github`;
 
     };
 

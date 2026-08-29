@@ -10,13 +10,19 @@ const AllUsers = () => {
 
     const token = localStorage.getItem("token");
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
+
+    // ==========================================
+    // FETCH ALL USERS
+    // ==========================================
 
     const fetchUsers = async () => {
 
         try {
 
             const response = await fetch(
-                "http://localhost:8080/api/v1/users",
+                `${API_URL}/api/v1/users`,
                 {
                     method: "GET",
 
@@ -48,12 +54,20 @@ const AllUsers = () => {
     };
 
 
+    // ==========================================
+    // LOAD USERS
+    // ==========================================
+
     useEffect(() => {
 
         fetchUsers();
 
     }, []);
 
+
+    // ==========================================
+    // DELETE USER
+    // ==========================================
 
     const handleDelete = async (id) => {
 
@@ -70,12 +84,13 @@ const AllUsers = () => {
         try {
 
             const response = await fetch(
-                `http://localhost:8080/api/v1/users/${id}`,
+                `${API_URL}/api/v1/users/${id}`,
                 {
                     method: "DELETE",
 
                     headers: {
-                        "Authorization": `Bearer ${token}`
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
                     }
                 }
             );
@@ -86,6 +101,7 @@ const AllUsers = () => {
             }
 
 
+            // Remove deleted user from UI
             setUsers(
                 users.filter(
                     user => user.id !== id
@@ -101,6 +117,10 @@ const AllUsers = () => {
     };
 
 
+    // ==========================================
+    // LOADING
+    // ==========================================
+
     if (loading) {
 
         return (
@@ -111,6 +131,10 @@ const AllUsers = () => {
     }
 
 
+    // ==========================================
+    // UI
+    // ==========================================
+
     return (
 
         <div style={styles.page}>
@@ -118,11 +142,13 @@ const AllUsers = () => {
             <div style={styles.header}>
 
                 <div>
+
                     <h1>All Users</h1>
 
                     <p>
                         Manage all registered users.
                     </p>
+
                 </div>
 
 
@@ -194,12 +220,16 @@ const AllUsers = () => {
                                 </td>
 
                                 <td style={styles.td}>
+
                                     {user.enable
                                         ? "Active"
                                         : "Inactive"}
+
                                 </td>
 
                                 <td style={styles.td}>
+
+                                    {/* EDIT */}
 
                                     <button
                                         onClick={() =>
@@ -212,6 +242,8 @@ const AllUsers = () => {
                                         Edit
                                     </button>
 
+
+                                    {/* DELETE */}
 
                                     <button
                                         onClick={() =>
@@ -240,6 +272,10 @@ const AllUsers = () => {
     );
 };
 
+
+// ==========================================
+// STYLES
+// ==========================================
 
 const styles = {
 

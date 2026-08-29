@@ -17,7 +17,7 @@ const Profile = () => {
             try {
 
                 const response = await fetch(
-                    "http://localhost:8080/api/v1/users/me",
+                    `${import.meta.env.VITE_API_URL}/api/v1/users/me`,
                     {
                         method: "GET",
 
