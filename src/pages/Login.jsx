@@ -20,15 +20,16 @@ function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const [showPassword, setShowPassword] =
-        useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
-    const [loading, setLoading] =
-        useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const [error, setError] =
-        useState("");
+    const [error, setError] = useState("");
 
+
+    // ==========================================
+    // LOGIN
+    // ==========================================
 
     const handleSubmit = async (e) => {
 
@@ -47,27 +48,82 @@ function Login() {
                 }
             );
 
+
+            console.log(
+                "LOGIN STATUS:",
+                response.status
+            );
+
             console.log(
                 "LOGIN RESPONSE:",
                 response.data
             );
 
 
-            // JWT SAVE
-            sessionStorage.setItem(
+            // ==========================================
+            // CHECK JWT
+            // ==========================================
+
+            const token = response.data?.token;
+
+
+            if (!token) {
+
+                console.error(
+                    "No JWT token received from backend."
+                );
+
+                setError(
+                    "Login failed. Server did not return an authentication token."
+                );
+
+                return;
+            }
+
+
+            // ==========================================
+            // CLEAR OLD AUTH DATA
+            // ==========================================
+
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("user");
+
+
+            // ==========================================
+            // SAVE TOKEN
+            // ==========================================
+            // IMPORTANT:
+            // AllUsers.jsx also reads from localStorage
+            // ==========================================
+
+            localStorage.setItem(
                 "token",
-                response.data.token
+                token
             );
 
 
-            // USER SAVE
-            sessionStorage.setItem(
+            // ==========================================
+            // SAVE USER
+            // ==========================================
+
+            localStorage.setItem(
                 "user",
                 JSON.stringify(response.data)
             );
 
 
+            console.log(
+                "JWT saved successfully."
+            );
+
+
+            // ==========================================
             // DASHBOARD
+            // ==========================================
+
             navigate("/dashboard");
 
 
@@ -79,7 +135,22 @@ function Login() {
             );
 
 
+            // ==========================================
+            // BACKEND RESPONSE ERROR
+            // ==========================================
+
             if (err.response) {
+
+                console.error(
+                    "STATUS:",
+                    err.response.status
+                );
+
+                console.error(
+                    "ERROR RESPONSE:",
+                    err.response.data
+                );
+
 
                 setError(
                     err.response.data?.message ||
@@ -89,7 +160,7 @@ function Login() {
             } else {
 
                 setError(
-                    "Cannot connect to server. Make sure Spring Boot is running."
+                    "Cannot connect to server. Make sure the backend is running."
                 );
             }
 
@@ -97,7 +168,6 @@ function Login() {
         } finally {
 
             setLoading(false);
-
         }
     };
 
@@ -110,7 +180,6 @@ function Login() {
 
         window.location.href =
             `${import.meta.env.VITE_API_URL}/oauth2/authorization/google`;
-
     };
 
 
@@ -122,7 +191,6 @@ function Login() {
 
         window.location.href =
             `${import.meta.env.VITE_API_URL}/oauth2/authorization/github`;
-
     };
 
 
@@ -263,6 +331,8 @@ function Login() {
 
                     <form onSubmit={handleSubmit}>
 
+                        {/* EMAIL */}
+
                         <div className="form-group">
 
                             <label>
@@ -288,6 +358,8 @@ function Login() {
 
                         </div>
 
+
+                        {/* PASSWORD */}
 
                         <div className="form-group">
 
@@ -351,6 +423,8 @@ function Login() {
                         </div>
 
 
+                        {/* LOGIN BUTTON */}
+
                         <button
                             type="submit"
                             className="login-button"
@@ -380,12 +454,18 @@ function Login() {
                     </form>
 
 
+                    {/* DIVIDER */}
+
                     <div className="divider">
+
                         <span>
                             OR CONTINUE WITH
                         </span>
+
                     </div>
 
+
+                    {/* GOOGLE */}
 
                     <button
                         type="button"
@@ -404,6 +484,8 @@ function Login() {
                     </button>
 
 
+                    {/* GITHUB */}
+
                     <button
                         type="button"
                         className="oauth-button"
@@ -420,6 +502,8 @@ function Login() {
 
                     </button>
 
+
+                    {/* REGISTER */}
 
                     <p className="register-text">
 
@@ -438,5 +522,6 @@ function Login() {
         </div>
     );
 }
+
 
 export default Login;

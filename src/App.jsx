@@ -18,56 +18,41 @@ function App() {
 
             <Routes>
 
-                {/* LOGIN */}
                 <Route
                     path="/login"
                     element={<Login />}
                 />
 
-
-                {/* REGISTER */}
                 <Route
                     path="/register"
                     element={<Register />}
                 />
 
-
-                {/* DASHBOARD */}
                 <Route
                     path="/dashboard"
                     element={<Dashboard />}
                 />
 
-
-                {/* OAUTH2 SUCCESS */}
                 <Route
                     path="/oauth2/success"
                     element={<OAuth2Success />}
                 />
 
-
-                {/* ALL USERS */}
                 <Route
                     path="/users"
                     element={<AllUsers />}
                 />
 
-
-                {/* ADD USER */}
                 <Route
                     path="/users/add"
                     element={<AddUser />}
                 />
 
-
-                {/* PROFILE */}
                 <Route
                     path="/profile"
                     element={<Profile />}
                 />
 
-
-                {/* DEFAULT */}
                 <Route
                     path="*"
                     element={<Login />}
